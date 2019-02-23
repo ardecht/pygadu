@@ -70,7 +70,7 @@ class Client:
                 self.status = login_struct.status
                 self.description = login_struct.description
                 self.is_logged = True
-                logger.debug(login_struct.version)
+
                 self.database.update_user_status(self.uin, self.status, self.description)
 
                 self.send_my_change_status_to_my_buddies()
