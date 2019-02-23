@@ -56,6 +56,9 @@ class Client:
     def authorize(self, data):
         login_struct = libgadu.gg_login80(data)
 
+        if not login_struct.version.startswith("Gadu-Gadu Client build 8.0.0"):
+            return False
+
         user = self.database.find_user(login_struct.uin)
 
         if user is not None:
