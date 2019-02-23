@@ -36,13 +36,25 @@ class ProxyHandler(BaseHTTPRequestHandler):
         # self.write_response(200, {"Connection": "keep-alive"}, "")
         pass
 
+    def read_file(self, path):
+        try:
+            file = open(path, "r")
+            return file.read()
+        except:
+            return ""
+
     def resolve_request(self):
         if self.path.startswith("http://appmsg.gadu-gadu.pl/appsvc/appmsg_ver8.asp"):
-            self.write_response(200, {}, "0 0 " + self.addr + ":8074 " + self.addr + "\r\n")
+            self.write_response(200, {}, "0 0 " + self.addr + ":8074 " + self.addr + "\r\n" + self.read_file("html/hello.html"))
 
-        elif self.path.startswith("http://adserver.gadu-gadu.pl"):
-            self.write_response(200, {"Content-Type": "text/html; charset=UTF-8"},
-                                "<center><strong>pyGadu</strong></center>\r\n")
+        elif self.path.startswith("http://adserver.gadu-gadu.pl/getmainbanner8.asp"):
+            self.write_response(200, {"Content-Type": "text/html; charset=UTF-8"}, self.read_file("html/mainbanner.html"))
+
+        elif self.path.startswith("http://adserver.gadu-gadu.pl/getsmallbanner8.asp"):
+            self.write_response(200, {"Content-Type": "text/html; charset=UTF-8"}, self.read_file("html/smallbanner.html"))
+
+        elif self.path.startswith("http://adserver.gadu-gadu.pl/getbanner8.asp"):
+            self.write_response(200, {"Content-Type": "text/html; charset=UTF-8"}, self.read_file("html/banner.html"))
 
         elif self.path.startswith("http://api.gadu-gadu.pl/request_token"):
             self.write_response(200, {"Content-Type": "text/xml"},
