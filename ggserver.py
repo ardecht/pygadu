@@ -228,7 +228,7 @@ class Client:
                     logger.error("[SEND] [GG_LOGIN80] Failed {}".format(self.handler.client_address))
                     self.send_disconnect()
             else:
-                logger.error("[RECV] Invalid packed {} (size: {}) from {}".format(hex(packet_type), packet_size, self.handler.client_address))
+                logger.error("[RECV] Invalid packet {} (size: {}) from {}".format(hex(packet_type), packet_size, self.handler.client_address))
         else:
             if packet_type == libgadu.GG_NEW_STATUS80:
                 logger.info("[RECV] [GG_NEW_STATUS80] {}".format(self.handler.client_address))
@@ -288,13 +288,15 @@ class ClientHandler(BaseRequestHandler):
                     break
 
                 # Parse data
-                (packet_type, packet_size) = struct.unpack("<ii", data[:8])
-                packet_body = data[8:]
+                while len(data) > 0:
+                    (packet_type, packet_size) = struct.unpack("<ii", data[:8])
+                    packet_body = data[8:8+packet_size]
+                    data = data[8+packet_size:]
 
-                if packet_size == len(packet_body):
-                    client.handle(packet_type, packet_size, packet_body)
-                else:
-                    raise Exception("Invalid packet length! Packet size should be {} but is {}".format(packet_size, len(packet_body)))
+                    if packet_size == len(packet_body):
+                        client.handle(packet_type, packet_size, packet_body)
+                    else:
+                        raise Exception("Invalid packet length! Packet size should be {} but is {}".format(packet_size, len(packet_body)))
             except Exception as e:
                 logger.error("Client exception! {}".format(e))
                 traceback.print_tb(e.__traceback__)

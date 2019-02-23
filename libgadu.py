@@ -142,4 +142,4 @@ class gg_send_msg80(PacketBuffer):
         self.offset_attributes = self._read_int32()
         self.html_message = self._read_string(self.offset_plain - 20)
         self.plain_message = self._read_string(self.offset_attributes - self.offset_plain, "ISO-8859-2")
-        self.attributes = self._read_string(None)
+        self.attributes = self._read_string(None, "ISO-8859-2")
