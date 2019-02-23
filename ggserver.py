@@ -241,6 +241,9 @@ class Client:
                 if packet_type == libgadu.GG_NOTIFY_LAST:
                     self.check_my_buddies_status()
 
+            elif packet_type == libgadu.GG_LIST_EMPTY:
+                logger.info("[RECV] [GG_LIST_EMPTY] {}".format(self.handler.client_address))
+
             elif packet_type == libgadu.GG_SEND_MSG80:
                 logger.info("[RECV] [GG_SEND_MSG80] {}".format(self.handler.client_address))
                 self.send_msg_to_client(data)

@@ -40,6 +40,7 @@ Client version: ```Gadu-Gadu Client build 8.0.0.10102```
 * GG_PING - 100%
 * GG_ADD_NOTIFY - 100%
 * GG_REMOVE_NOTIFY - 100%
+* GG_LIST_EMPTY - 100%
 
 ### Actual state
 * Client can connect and log in
