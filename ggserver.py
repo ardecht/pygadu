@@ -178,13 +178,30 @@ class Client:
                 recv_msg_packet.write_string(my_msg_packet.plain_message, "ISO-8859-2")
                 client.handler.send(recv_msg_packet)
 
-                logger.info("[SEND] [GG_RECV_MSG] {}".format(self.handler.client_address))
+                logger.info("[SEND] [GG_RECV_MSG] {}".format(client.handler.client_address))
                 return
+
+        self.database.add_user_message_to_queue(self.uin, my_msg_packet.recipient, my_msg_packet.plain_message)
 
     def send_disconnect(self):
         disconnect_packet = ResponsePacket(libgadu.GG_DISCONNECTING)
         self.handler.send(disconnect_packet)
         self.handler.closed = True
+
+    def send_client_queued_messages(self):
+        queued_messages = self.database.find_and_delete_user_queued_messages(self.uin)
+
+        for queued_message in queued_messages:
+            (sender, recipient, message) = queued_message
+            recv_msg_packet = ResponsePacket(libgadu.GG_RECV_MSG)
+            recv_msg_packet.write_int32(sender)
+            recv_msg_packet.write_int32(123)
+            recv_msg_packet.write_int32(int(time.time()))
+            recv_msg_packet.write_int32(0x0001)
+            recv_msg_packet.write_string(message, "ISO-8859-2")
+            self.handler.send(recv_msg_packet)
+
+            logger.info("[SEND] [GG_RECV_MSG] {}".format(self.handler.client_address))
 
     def handle(self, packet_type, packet_size, data):
         if not self.is_logged:
@@ -197,6 +214,8 @@ class Client:
                     self.handler.send(login_result_packet)
 
                     logger.info("[SEND] [GG_LOGIN80] Success {}".format(self.handler.client_address))
+
+                    self.send_client_queued_messages()
                 else:
                     login_result_packet = ResponsePacket(libgadu.GG_LOGIN_FAILED)
                     login_result_packet.write_int32(1)

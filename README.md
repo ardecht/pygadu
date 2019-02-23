@@ -46,9 +46,9 @@ Client version: ```Gadu-Gadu Client build 8.0.0.10102```
 * Client can change status
 * Client can have buddies and check their status and description
 * Client can send simple messages to other clients (one to one)
+* Messages are queued in database when recipient is offline
 
 ### Not working
-* Client can't queue simple message to other client when he is offline
 * Other protocol messages...
 
 ## Credits

@@ -34,3 +34,14 @@ class Database:
     def update_user_status(self, uin, status, description):
         self.db.execute("UPDATE users SET status = (?), description = (?) WHERE uin = (?)", [status, description, uin])
         self.db.commit()
+
+    def find_and_delete_user_queued_messages(self, uin):
+        messages = self.db.execute("SELECT * FROM messages WHERE recipient = (?)", [uin]).fetchall()
+        self.db.execute("DELETE FROM messages WHERE recipient = (?)", [uin])
+        self.db.commit()
+        return messages
+
+    def add_user_message_to_queue(self, sender, recipient, message):
+        self.db.execute("INSERT INTO messages(sender, recipient, message) VALUES ((?), (?), (?))", [sender, recipient, message])
+        self.db.commit()
+        pass
